@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5001/api",
+  baseURL: "https://restcountry.onrender.com/api",
 });
 
 // Add JWT token to every request if exists
