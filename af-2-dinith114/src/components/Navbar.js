@@ -1,34 +1,51 @@
 // src/components/Navbar.js
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
-import Logo from "../assets/GeoViewLogo2.png"; // adjust path if needed
+import Logo from "../assets/GeoViewLogo2.png";
 
-import { FiLogOut, FiLogIn, FiUserPlus, FiHeart } from "react-icons/fi";
+import {
+  FiLogOut,
+  FiLogIn,
+  FiUserPlus,
+  FiHeart,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
 import { FaSun, FaMoon } from "react-icons/fa";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const { darkMode, toggleTheme } = useContext(ThemeContext);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <nav className="sticky top-0 z-50 bg-white dark:bg-dark text-black dark:text-white shadow-md transition-colors duration-300">
-      <div className="max-w-8x1 mx-auto px-8 py-3 flex items-center justify-between">
+      <div className="max-w-7x2 mx-7 px-6 py-4 flex items-center justify-between">
+        {/* Logo + name */}
         <Link
           to="/"
-          className="flex items-center space-x-2 font-bold text-4xl text-black dark:text-white hover:text-blue-400 transition"
+          className="flex items-center space-x-2 font-bold text-3xl text-black dark:text-white hover:text-blue-400"
         >
           <img
             src={Logo}
             alt="GeoView Logo"
-            className="w-15 h-16 animate-spin-slow hover:animate-spin"
+            className="w-14 h-14 animate-spin-slow hover:animate-spin"
           />
           <span>GeoView</span>
         </Link>
 
-        <div className="space-x-4 flex items-center">
-          {/* 🌙 Theme toggle */}
+        {/* Hamburger on mobile */}
+        <button
+          className="md:hidden text-2xl"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <FiX /> : <FiMenu />}
+        </button>
+
+        {/* Desktop menu */}
+        <div className="hidden md:flex items-center space-x-4">
           <button
             onClick={toggleTheme}
             className="text-xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
@@ -45,10 +62,9 @@ const Navbar = () => {
             <>
               <Link
                 to="/favorites"
-                className="flex items-center gap-1 text-white dark:text-white hover:text-pink-400 transition"
+                className="flex items-center gap-1 hover:text-pink-400 transition"
               >
-                <FiHeart />
-                Favorites
+                <FiHeart /> Favorites
               </Link>
               <button
                 onClick={logout}
@@ -78,6 +94,62 @@ const Navbar = () => {
           )}
         </div>
       </div>
+
+      {/* Mobile menu dropdown */}
+      {menuOpen && (
+        <div className="md:hidden px-6 pb-4 space-y-4">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-2 text-xl"
+          >
+            {darkMode ? (
+              <FaSun className="text-yellow-400" />
+            ) : (
+              <FaMoon className="text-blue-400" />
+            )}
+            Toggle Theme
+          </button>
+
+          {user ? (
+            <>
+              <Link
+                to="/favorites"
+                className="flex items-center gap-2 hover:text-pink-400"
+                onClick={() => setMenuOpen(false)}
+              >
+                <FiHeart /> Favorites
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setMenuOpen(false);
+                }}
+                className="flex items-center gap-2 w-full bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full"
+              >
+                <FiLogOut />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full bg-blue-600 text-white px-4 py-2 rounded-full"
+              >
+                <FiLogIn /> Login
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full bg-green-600 text-white px-4 py-2 rounded-full"
+              >
+                <FiUserPlus /> Register
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 };
